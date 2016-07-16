@@ -7,26 +7,26 @@
 
 var uuid = require('uuid');
 
-var patchEntities = function(c) {
-  if (c.entities.__inspect_patched__) {
+var patchEntities = function(game) {
+  if (game.entities.__inspect_patched__) {
     // Was already patched
     return;
   }
 
   // Patch over existing create method
-  var origCreate = c.entities.create;
-  c.entities.create = function() {
+  var origCreate = game.entities.create;
+  game.entities.create = function() {
     var entity = origCreate.apply(this, arguments);
     entity.__inspect_uuid__ = uuid.v1();
     return entity;
   };
 
   // Add uuids to existing entities
-  c.entities.all().forEach(function(entity) {
+  game.entities.all().forEach(function(entity) {
     entity.__inspect_uuid__ = uuid.v1();
   });
 
-  c.entities.__inspect_patched__ = true;
+  game.entities.__inspect_patched__ = true;
 };
 
 module.exports = patchEntities;

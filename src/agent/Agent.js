@@ -9,11 +9,9 @@ var GAME_OBJECT_ID = 'game_object';
  * TODO: why is this even a Class? doesn't really do anything particularly ~object-oriented~
  * not sure what to refactor it into, tho
  */
-var Agent = function(c) {
-  this.c = c;
-  this.game = c.entities.game;
-  this.Coquette = c.constructor;
-  this.canvas = c.renderer._ctx.canvas;
+var Agent = function(game) {
+  this.game = game;
+  this.canvas = game.renderer.getCtx().canvas;
 
   // Agent state
   this.subscribedEntityId = null;
@@ -38,11 +36,11 @@ Agent.prototype.initDebugLoop = function() {
     // TODO: setTimeout() seems like a non-optimal way to do this, could end up missing frames
     // or hurting perf? :C
     setTimeout(() => {
-      this.c.runner.add(undefined, debugLoop);
+      this.game.runner.add(debugLoop);
     });
   };
 
-  this.c.runner.add(undefined, debugLoop);
+  this.game.runner.add(debugLoop);
 };
 
 Agent.prototype.initDevtoolsMessageListener = function() {
@@ -65,7 +63,7 @@ Agent.prototype.initDevtoolsMessageListener = function() {
 };
 
 Agent.prototype.reportEntities = function() {
-  var entities = this.c.entities.all().concat(this.game);
+  var entities = [...this.game.entities.all()].concat(this.game);
 
   var entitiesList = entities.map((entity) => {
     return {
@@ -105,18 +103,18 @@ Agent.prototype.handlers = {
   },
 
   pause: function() {
-    this.c.ticker.stop();
+    this.game.ticker.stop();
     sendMessage('paused');
   },
 
   unpause: function() {
-    this.c.ticker.start();
+    this.game.ticker.start();
     sendMessage('unpaused');
   },
 
   step: function() {
-    this.c.ticker.start();  // this sets a cb for the requestAnimationFrame() loop..
-    this.c.ticker.stop();   // ...and this unsets it, so that only one frame is run
+    this.game.ticker.start();  // this sets a cb for the requestAnimationFrame() loop..
+    this.game.ticker.stop();   // ...and this unsets it, so that only one frame is run
   },
 
   updateProperty: function(data) {
@@ -127,7 +125,7 @@ Agent.prototype.handlers = {
     if (data.entityId === GAME_OBJECT_ID) {
       entity = this.game;
     } else {
-      entity = this.c.entities.all()
+      entity = [...this.game.entities.all()]
         .filter((entity) => entity.__inspect_uuid__ === data.entityId)[0];
     }
 
@@ -176,7 +174,7 @@ Agent.prototype.attachSelectClickHandler = function() {
     var x = e.pageX - e.target.offsetLeft;
     var y = e.pageY - e.target.offsetTop;
 
-    var matching = _.find(this.c.entities.all(), (obj) => {
+    var matching = _.find(this.game.entities.all(), (obj) => {
       if (!obj.center || !obj.size) {
         return false;
       }
