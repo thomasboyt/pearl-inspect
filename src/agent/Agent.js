@@ -3,8 +3,6 @@ var sendMessage = require('./util/sendMessage');
 var serializeEntity = require('./util/serializeEntity');
 var deepUpdate = require('../common/deepUpdate');
 
-var GAME_OBJECT_ID = 'game_object';
-
 /**
  * TODO: why is this even a Class? doesn't really do anything particularly ~object-oriented~
  * not sure what to refactor it into, tho
@@ -15,12 +13,6 @@ var Agent = function(game) {
 
   // Agent state
   this.subscribedEntityId = null;
-
-  // Register a displayName and ID on the game object
-  if (!this.game.displayName) {
-    this.game.displayName = '<Game object>';
-  }
-  this.game.__inspect_uuid__ = GAME_OBJECT_ID;
 
   // Kick off debug loop and message handler
   this.initDebugLoop();
@@ -63,7 +55,7 @@ Agent.prototype.initDevtoolsMessageListener = function() {
 };
 
 Agent.prototype.reportEntities = function() {
-  var entities = [...this.game.entities.all()].concat(this.game);
+  var entities = [...this.game.entities.all()];
 
   var entitiesList = entities.map((entity) => {
     return {
@@ -121,13 +113,8 @@ Agent.prototype.handlers = {
     /* jshint evil: true */
 
     // find entity by UUID
-    var entity;
-    if (data.entityId === GAME_OBJECT_ID) {
-      entity = this.game;
-    } else {
-      entity = [...this.game.entities.all()]
+    var entity = [...this.game.entities.all()]
         .filter((entity) => entity.__inspect_uuid__ === data.entityId)[0];
-    }
 
     if (!entity) {
       throw new Error('No entity found with id ' + data.entityId);
