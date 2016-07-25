@@ -1,3 +1,9 @@
+var hiddenTypes = [
+  HTMLElement,
+  AudioContext,
+  CanvasRenderingContext2D,
+];
+
 var cloneValue = function(val, seen, blacklist) {
 
   /* Functions */
@@ -26,10 +32,10 @@ var cloneValue = function(val, seen, blacklist) {
       return '[[Circular reference]]';
     }
     if (blacklist.has(val)) {
-      return '[[Entity ' + val.displayName + ']]';
+      return '[[Entity ' + val.name + ']]';
     }
 
-    if (val instanceof HTMLElement) {
+    if (hiddenTypes.some((type) => val instanceof type)) {
       return '[' + val.toString() + ']';  // looks like [[object HTMLElement]]
     }
 

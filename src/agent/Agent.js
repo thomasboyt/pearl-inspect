@@ -59,7 +59,7 @@ Agent.prototype.reportEntities = function() {
 
   var entitiesList = entities.map((entity) => {
     return {
-      displayName: entity.displayName || entity.constructor.name,
+      displayName: entity.name || entity.constructor.name,
       entityId: entity.__inspect_uuid__
     };
   });

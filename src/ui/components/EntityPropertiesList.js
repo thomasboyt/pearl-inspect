@@ -22,11 +22,16 @@ var EntityObjectProperty = React.createClass({
   render: function() {
     var isOpen = this.state.isOpen;
 
+    let label = 'Object';
+    if (this.props.obj.displayName) {
+      label = this.props.obj.displayName;
+    }
+
     return (
       <li>
         <span onClick={this.handleToggleOpen}>
           <ListArrow isActive={isOpen} />
-          <code>{this.props.prop}</code>: Object
+          <code>{this.props.prop}</code>: {label}
         </span>
 
         {isOpen && <EntityPropertiesList entity={this.props.entity} obj={this.props.obj}
