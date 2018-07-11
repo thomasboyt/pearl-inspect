@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
 
   entry: {
-    ui: './src/ui/index.js',
+    ui: './src/ui-2/index.tsx',
     agent: './src/agent/index.ts',
   },
 
@@ -29,7 +29,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },

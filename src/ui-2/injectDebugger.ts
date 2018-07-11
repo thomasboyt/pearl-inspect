@@ -1,19 +1,17 @@
-var sendMessage = require('./util/sendMessage');
+// var sendMessage = require('./util/sendMessage');
+import sendMessage from './util/sendMessage';
+import { INJECT_FLAG_NAME } from '../common/constants';
 
 // thx https://github.com/emberjs/ember-inspector/blob/master/app/adapters/chrome.js
-var injectDebugger = function() {
-  /* jshint evil: true */
-
-  var injectedGlobal = 'window.__coquette_inspect_agent_injected__';
-
-  chrome.devtools.inspectedWindow.eval(injectedGlobal, function(result) {
+export default function injectDebugger() {
+  chrome.devtools.inspectedWindow.eval(INJECT_FLAG_NAME, function(result) {
     if (!result) {
       // script hasn't been injected yet
 
-      var xhr = new XMLHttpRequest();
+      const xhr = new XMLHttpRequest();
       xhr.open('GET', chrome.extension.getURL('/build/agent.bundle.js'), false);
       xhr.send();
-      var script = xhr.responseText;
+      const script = xhr.responseText;
 
       chrome.devtools.inspectedWindow.eval(script, function(result, err) {
         if (err) {
@@ -27,6 +25,4 @@ var injectDebugger = function() {
       sendMessage('connect');
     }
   });
-};
-
-module.exports = injectDebugger;
+}

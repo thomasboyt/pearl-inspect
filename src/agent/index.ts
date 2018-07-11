@@ -1,4 +1,5 @@
-(window as any).__pearl_inspect_agent_injected__ = true;
+import { INJECT_FLAG_NAME } from '../common/constants';
+(window as any)[INJECT_FLAG_NAME] = true;
 
 import Agent from './Agent';
 import sendMessage from './util/sendMessage';

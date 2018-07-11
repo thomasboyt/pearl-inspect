@@ -5,7 +5,9 @@
   "[typescript]": {
     "editor.formatOnSave": true
   },
-  "eslint.validate": ["javascript", "javascriptreact"],
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  },
   "files.trimTrailingWhitespace": false,
   "editor.wordWrapColumn": 80
 }

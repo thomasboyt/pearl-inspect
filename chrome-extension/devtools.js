@@ -1,1 +1,1 @@
-chrome.devtools.panels.create('Coquette', null, 'panel.html');
+chrome.devtools.panels.create('Pearl', null, 'panel.html');

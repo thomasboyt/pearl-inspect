@@ -4,6 +4,8 @@
         "module": "es2015",
         "moduleResolution": "node",
         "strict": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "jsx": "react",
+        "experimentalDecorators": true
     }
 }
