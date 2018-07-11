@@ -18,7 +18,7 @@ var EntityStore = Fluxxor.createStore({
     this.entities = data.entities;
 
     if (data.subscribedEntity) {
-      this.subscribedId = data.subscribedEntity.__inspect_uuid__;
+      this.subscribedId = data.subscribedEntity.id;
       this.subscribedDetail = data.subscribedEntity;
     } else {
       this.subscribedId = null;
@@ -30,7 +30,7 @@ var EntityStore = Fluxxor.createStore({
 
   onDidUpdateProperty: function(data) {
     var entity = this.entities.filter(
-      (entity) => entity.__inspect_uuid__ === data.entityId
+      (entity) => entity.id === data.entityId
     )[0];
 
     if (!entity) {

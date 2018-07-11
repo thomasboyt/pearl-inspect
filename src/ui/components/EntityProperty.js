@@ -43,7 +43,7 @@ var EntityProperty = React.createClass({
     }
 
     this.getFlux().actions.entities.updateProperty({
-      entityId: this.props.entity.__inspect_uuid__,
+      entityId: this.props.entity.id,
       path: this.props.path,
       value: value,
     });

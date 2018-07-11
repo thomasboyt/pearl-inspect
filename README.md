@@ -32,10 +32,8 @@ There are two modifications you'll need to do to your Coquette apps to make them
 
 The most important one is that you expose the Pearl instance in your game as `window.__pearl__`, e.g.:
 
-```js
-var Game = function() {
-  window.__pearl__ = this.c = new Coquette(this, "canvas", 500, 150, "#000");
-// ...
+```typescript
+window.__pearl__ = createPearl({/* ... */})
 ```
 
 Without this, the inspector won't be able to find your Coquette instance.
