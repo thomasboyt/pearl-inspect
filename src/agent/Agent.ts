@@ -2,6 +2,7 @@ import { PearlInstance, GameObject } from 'pearl';
 import sendMessage from './util/sendMessage';
 import serializeEntity from './util/serializeEntity';
 import deepUpdate from './util/deepUpdate';
+import { SerializedEntity } from './types';
 
 export default class Agent {
   pearl: PearlInstance;
@@ -58,10 +59,10 @@ export default class Agent {
   reportEntities() {
     const entities = [...this.pearl.entities.all()];
 
-    const entitiesList = entities.map((entity) => {
+    const entitiesList: SerializedEntity[] = entities.map((entity) => {
       return {
-        displayName: entity.name || entity.constructor.name,
-        entityId: entity.id,
+        name: entity.name,
+        id: entity.id,
       };
     });
 

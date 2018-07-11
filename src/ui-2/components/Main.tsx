@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import ConnectionStore from '../stores/ConnectionStore';
+import GameControls from './GameControls';
+import EntitiesList from './EntitiesList';
+import EntityDetail from './EntityDetail';
 
 interface Props {
   connectionStore?: ConnectionStore;
@@ -15,10 +18,16 @@ class Main extends React.Component<Props, {}> {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
-          {/* <GameControls /> */}
+          <GameControls />
           <h3 className="panel-title">Entities</h3>
         </div>
-        <div className="panel-body">{/* <EntityList /> */}</div>
+
+        <div className="panel-body">
+          <div style={{ display: 'flex' }}>
+            <EntitiesList />
+            <EntityDetail />
+          </div>
+        </div>
       </div>
     );
   }

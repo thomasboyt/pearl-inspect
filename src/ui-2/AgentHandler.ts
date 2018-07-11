@@ -24,22 +24,28 @@ export default class AgentHandler {
 
   handlers: { [_: string]: (data?: any) => void } = {
     connected: () => this.stores.connectionStore.onConnected(),
+    reloaded: () => injectDebugger(),
 
-    // reloaded: () => injectDebugger(),
+    tick: (data) => {
+      this.stores.entitiesStore.onReceivedEntities({
+        entities: data.entities,
+        subscribedEntity: data.subscribedEntity,
+      });
 
-    // tick: (data) => {
-    //   this.flux.actions.entities.didGetEntities({
-    //     entities: data.entities,
-    //     subscribedEntity: data.subscribedEntity,
-    //   });
+      this.stores.gameStore.onTicked();
+    },
 
-    //   this.flux.actions.game.didTick();
-    // },
-
-    // paused: () => this.flux.actions.game.didPauseGame(),
-    // unpaused: () => this.flux.actions.game.didUnpauseGame(),
-
-    // enabledSelectMode: () => this.flux.actions.game.didEnableSelectMode(),
-    // disabledSelectMode: () => this.flux.actions.game.didDisableSelectMode(),
+    paused: () => {
+      this.stores.gameStore.onPausedGame();
+    },
+    unpaused: () => {
+      this.stores.gameStore.onUnpausedGame();
+    },
+    enabledSelectMode: () => {
+      this.stores.gameStore.onEnabledSelectMode();
+    },
+    disabledSelectMode: () => {
+      this.stores.gameStore.onDisabledSelectMode();
+    },
   };
 }
