@@ -4,8 +4,8 @@ var deepUpdate = require('../../common/deepUpdate');
 
 var EntityStore = Fluxxor.createStore({
   actions: {
-    'didGetEntities': 'onDidGetEntities',
-    'didUpdateProperty': 'onDidUpdateProperty'
+    didGetEntities: 'onDidGetEntities',
+    didUpdateProperty: 'onDidUpdateProperty',
   },
 
   initialize: function() {
@@ -29,8 +29,9 @@ var EntityStore = Fluxxor.createStore({
   },
 
   onDidUpdateProperty: function(data) {
-    var entity = this.entities
-      .filter((entity) => entity.__inspect_uuid__ === data.entityId)[0];
+    var entity = this.entities.filter(
+      (entity) => entity.__inspect_uuid__ === data.entityId
+    )[0];
 
     if (!entity) {
       throw new Error('No entity found with id ' + data.entityId);
@@ -39,7 +40,7 @@ var EntityStore = Fluxxor.createStore({
     deepUpdate(entity, data.path, data.value);
 
     this.emit('change');
-  }
+  },
 });
 
 module.exports = EntityStore;

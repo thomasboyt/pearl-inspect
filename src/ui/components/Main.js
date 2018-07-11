@@ -5,33 +5,26 @@ var EntityList = require('./EntityList');
 var GameControls = require('./GameControls');
 
 var Main = React.createClass({
-  mixins: [
-    FluxMixin,
-    StoreWatchMixin('ConnectionStore')
-  ],
+  mixins: [FluxMixin, StoreWatchMixin('ConnectionStore')],
 
   getStateFromFlux: function() {
     var store = this.getFlux().store('ConnectionStore');
 
     return {
-      isConnected: store.isConnected
+      isConnected: store.isConnected,
     };
   },
 
   renderLoaded: function() {
     return (
       <div className="panel panel-default">
-
         <div className="panel-heading">
           <GameControls />
-          <h3 className="panel-title">
-            Entities
-          </h3>
+          <h3 className="panel-title">Entities</h3>
         </div>
         <div className="panel-body">
           <EntityList />
         </div>
-
       </div>
     );
   },
@@ -45,9 +38,11 @@ var Main = React.createClass({
           </div>
           <div className="panel-body">
             <p>
-              If there's a coquette application on the page, the most common reason this occurs is
-              because its Coquette instance hasn't been exposed on the main window object as
-              <code>window.__coquette__</code>. To fix, update your game's constructor, for example:
+              If there's a coquette application on the page, the most common
+              reason this occurs is because its Coquette instance hasn't been
+              exposed on the main window object as
+              <code>window.__coquette__</code>. To fix, update your game's
+              constructor, for example:
             </p>
 
             <pre>
@@ -67,10 +62,12 @@ var Main = React.createClass({
   render: function() {
     return (
       <div className="main-container">
-        { this.state.isConnected ? this.renderLoaded() : this.renderNoConnection() }
+        {this.state.isConnected
+          ? this.renderLoaded()
+          : this.renderNoConnection()}
       </div>
     );
-  }
+  },
 });
 
 module.exports = Main;

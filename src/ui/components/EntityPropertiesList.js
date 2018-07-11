@@ -3,19 +3,18 @@ var FluxMixin = require('fluxxor').FluxMixin(React);
 var EntityProperty = require('./EntityProperty');
 var ListArrow = require('./ListArrow');
 
-
-// TODO: This is currently inlined in this file because of the circular dependency between
-// EntityObjectProperty and EntityPropertiesList :(
+// TODO: This is currently inlined in this file because of the circular
+// dependency between EntityObjectProperty and EntityPropertiesList :(
 var EntityObjectProperty = React.createClass({
   getInitialState: function() {
     return {
-      isOpen: false
+      isOpen: false,
     };
   },
 
   handleToggleOpen: function() {
     this.setState({
-      isOpen: !this.state.isOpen
+      isOpen: !this.state.isOpen,
     });
   },
 
@@ -34,26 +33,28 @@ var EntityObjectProperty = React.createClass({
           <code>{this.props.prop}</code>: {label}
         </span>
 
-        {isOpen && <EntityPropertiesList entity={this.props.entity} obj={this.props.obj}
-          lastPath={this.props.path} />}
+        {isOpen && (
+          <EntityPropertiesList
+            entity={this.props.entity}
+            obj={this.props.obj}
+            lastPath={this.props.path}
+          />
+        )}
       </li>
     );
-  }
+  },
 });
 
-
 var EntityPropertiesList = React.createClass({
-  mixins: [
-    FluxMixin
-  ],
+  mixins: [FluxMixin],
 
   propTypes: {
     entity: React.PropTypes.object.isRequired,
     obj: React.PropTypes.oneOfType([
       React.PropTypes.object,
-      React.PropTypes.array
+      React.PropTypes.array,
     ]),
-    lastPath: React.PropTypes.array
+    lastPath: React.PropTypes.array,
   },
 
   renderItem: function(key, val) {
@@ -62,14 +63,24 @@ var EntityPropertiesList = React.createClass({
 
     if (typeof val === 'object' && val !== null) {
       return (
-        <EntityObjectProperty entity={this.props.entity}
-          prop={key} path={path} obj={val} key={key} />
+        <EntityObjectProperty
+          entity={this.props.entity}
+          prop={key}
+          path={path}
+          obj={val}
+          key={key}
+        />
       );
     }
 
     return (
-      <EntityProperty entity={this.props.entity}
-        prop={key} path={path} value={val} key={key} />
+      <EntityProperty
+        entity={this.props.entity}
+        prop={key}
+        path={path}
+        value={val}
+        key={key}
+      />
     );
   },
 
@@ -80,12 +91,8 @@ var EntityPropertiesList = React.createClass({
       .filter((prop) => prop !== 'displayName' && prop !== '__inspect_uuid__')
       .map((prop) => this.renderItem(prop, obj[prop]));
 
-    return (
-      <ul>
-        {items}
-      </ul>
-    );
-  }
+    return <ul>{items}</ul>;
+  },
 });
 
 module.exports = EntityPropertiesList;

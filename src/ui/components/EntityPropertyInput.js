@@ -7,7 +7,8 @@ var EntityPropertyInput = React.createClass({
   },
 
   handleKeyPress: function(e) {
-    if (e.charCode === 13) {  // enter
+    if (e.charCode === 13) {
+      // enter
       this.refs.input.blur();
     }
   },
@@ -20,9 +21,14 @@ var EntityPropertyInput = React.createClass({
     }
 
     return (
-      <input onBlur={this.props.onBlur} defaultValue={val} ref="input" onKeyPress={this.handleKeyPress} />
+      <input
+        onBlur={this.props.onBlur}
+        defaultValue={val}
+        ref="input"
+        onKeyPress={this.handleKeyPress}
+      />
     );
-  }
+  },
 });
 
 module.exports = EntityPropertyInput;

@@ -4,14 +4,12 @@ var EntityPropertiesList = require('./EntityPropertiesList');
 var ListArrow = require('./ListArrow');
 
 var Entity = React.createClass({
-  mixins: [
-    FluxMixin
-  ],
+  mixins: [FluxMixin],
 
   propTypes: {
     entity: React.PropTypes.object.isRequired,
     isActive: React.PropTypes.bool,
-    onClickEntity: React.PropTypes.func.isRequired
+    onClickEntity: React.PropTypes.func.isRequired,
   },
 
   render: function() {
@@ -27,10 +25,12 @@ var Entity = React.createClass({
           </span>
         </span>
 
-        {isActive && <EntityPropertiesList entity={this.props.subscribedDetail} />}
+        {isActive && (
+          <EntityPropertiesList entity={this.props.subscribedDetail} />
+        )}
       </li>
     );
-  }
+  },
 });
 
 module.exports = Entity;

@@ -7,5 +7,5 @@ module.exports = {
 
   didConnect: function() {
     this.dispatch('connected');
-  }
+  },
 };

@@ -2,7 +2,7 @@ var Fluxxor = require('fluxxor');
 
 var ConnectionStore = Fluxxor.createStore({
   actions: {
-    'connected': 'onConnected'
+    connected: 'onConnected',
   },
 
   initialize: function() {
@@ -12,7 +12,7 @@ var ConnectionStore = Fluxxor.createStore({
   onConnected: function() {
     this.isConnected = true;
     this.emit('change');
-  }
+  },
 });
 
 module.exports = ConnectionStore;

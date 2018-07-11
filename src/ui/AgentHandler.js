@@ -4,7 +4,9 @@ var injectDebugger = require('./injectDebugger');
 var AgentHandler = function(flux) {
   this.flux = flux;
 
-  port.onMessage.addListener((msg) => { this.handleMessage(msg); });
+  port.onMessage.addListener((msg) => {
+    this.handleMessage(msg);
+  });
 
   this.handlers = {
     connected: () => this.flux.actions.didConnect(),
@@ -14,7 +16,7 @@ var AgentHandler = function(flux) {
     tick: (data) => {
       this.flux.actions.entities.didGetEntities({
         entities: data.entities,
-        subscribedEntity: data.subscribedEntity
+        subscribedEntity: data.subscribedEntity,
       });
 
       this.flux.actions.game.didTick();
@@ -24,7 +26,7 @@ var AgentHandler = function(flux) {
     unpaused: () => this.flux.actions.game.didUnpauseGame(),
 
     enabledSelectMode: () => this.flux.actions.game.didEnableSelectMode(),
-    disabledSelectMode: () => this.flux.actions.game.didDisableSelectMode()
+    disabledSelectMode: () => this.flux.actions.game.didDisableSelectMode(),
   };
 };
 

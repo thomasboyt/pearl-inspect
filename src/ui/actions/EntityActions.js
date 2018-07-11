@@ -6,15 +6,15 @@ module.exports = {
   },
 
   subscribeToEntity: function(id) {
-    sendMessage('subscribeToEntity', {entityId: id});
+    sendMessage('subscribeToEntity', { entityId: id });
   },
 
   unsubscribeFromEntity: function(id) {
-    sendMessage('unsubscribeFromEntity', {entityId: id});
+    sendMessage('unsubscribeFromEntity', { entityId: id });
   },
 
   updateProperty: function(data) {
     sendMessage('updateProperty', data);
-    this.dispatch('didUpdateProperty', data);  // allow optimistic update
-  }
+    this.dispatch('didUpdateProperty', data); // allow optimistic update
+  },
 };

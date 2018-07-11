@@ -5,6 +5,5 @@ var ConnectionStore = require('./ConnectionStore');
 module.exports = {
   EntityStore: new EntityStore(),
   GameStore: new GameStore(),
-  ConnectionStore: new ConnectionStore()
+  ConnectionStore: new ConnectionStore(),
 };
-

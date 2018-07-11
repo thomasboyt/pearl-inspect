@@ -3,21 +3,21 @@ var FluxMixin = require('fluxxor').FluxMixin(React);
 var EntityPropertyInput = require('./EntityPropertyInput');
 
 var isUneditable = function(value) {
-  return (typeof value === 'string' && (
-          value === '[[Coquette namespace]]' ||
-          value === '[[Circular reference]]' ||
-          value.match(/^\[\[Entity .*\]\]$/) ||
-          value.match(/^\[\[object [^\s]*\]\]$/)));
+  return (
+    typeof value === 'string' &&
+    (value === '[[Coquette namespace]]' ||
+      value === '[[Circular reference]]' ||
+      value.match(/^\[\[Entity .*\]\]$/) ||
+      value.match(/^\[\[object [^\s]*\]\]$/))
+  );
 };
 
 var EntityProperty = React.createClass({
-  mixins: [
-    FluxMixin
-  ],
+  mixins: [FluxMixin],
 
   getInitialState: function() {
     return {
-      isOpen: false
+      isOpen: false,
     };
   },
 
@@ -27,13 +27,13 @@ var EntityProperty = React.createClass({
     }
 
     this.setState({
-      isOpen: true
+      isOpen: true,
     });
   },
 
   handleClose: function(e) {
     this.setState({
-      isOpen: false
+      isOpen: false,
     });
 
     var value = e.target.value;
@@ -45,7 +45,7 @@ var EntityProperty = React.createClass({
     this.getFlux().actions.entities.updateProperty({
       entityId: this.props.entity.__inspect_uuid__,
       path: this.props.path,
-      value: value
+      value: value,
     });
   },
 
@@ -96,8 +96,7 @@ var EntityProperty = React.createClass({
         <code>{prop}</code>: {valueDisplay}
       </li>
     );
-  }
-
+  },
 });
 
 module.exports = EntityProperty;

@@ -24,11 +24,11 @@ var mkAvgTick = function(maxSamples) {
 
 var GameStore = Fluxxor.createStore({
   actions: {
-    'pausedGame': 'onPausedGame',
-    'unpausedGame': 'onUnpausedGame',
-    'ticked': 'onTicked',
-    'enabledSelectMode': 'onEnabledSelectMode',
-    'disabledSelectMode': 'onDisabledSelectMode'
+    pausedGame: 'onPausedGame',
+    unpausedGame: 'onUnpausedGame',
+    ticked: 'onTicked',
+    enabledSelectMode: 'onEnabledSelectMode',
+    disabledSelectMode: 'onDisabledSelectMode',
   },
 
   initialize: function() {
@@ -68,7 +68,7 @@ var GameStore = Fluxxor.createStore({
   onDisabledSelectMode: function() {
     this.isSelecting = false;
     this.emit('change');
-  }
+  },
 });
 
 module.exports = GameStore;

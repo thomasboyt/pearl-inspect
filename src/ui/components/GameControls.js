@@ -3,17 +3,14 @@ var FluxMixin = require('fluxxor').FluxMixin(React);
 var StoreWatchMixin = require('fluxxor').StoreWatchMixin;
 
 var GameState = React.createClass({
-  mixins: [
-    FluxMixin,
-    StoreWatchMixin('GameStore')
-  ],
+  mixins: [FluxMixin, StoreWatchMixin('GameStore')],
 
   getStateFromFlux: function() {
     var store = this.getFlux().store('GameStore');
     return {
       isPaused: store.isPaused,
       isSelecting: store.isSelecting,
-      fps: store.fps
+      fps: store.fps,
     };
   },
 
@@ -45,7 +42,11 @@ var GameState = React.createClass({
   renderPaused: function() {
     return (
       <span>
-        <button onClick={this.handleTogglePause} className="activated" title="Play">
+        <button
+          onClick={this.handleTogglePause}
+          className="activated"
+          title="Play"
+        >
           <span className="glyphicon glyphicon-play" />
         </button>
         <button onClick={this.handleStep} title="Step forward">
@@ -78,12 +79,16 @@ var GameState = React.createClass({
       <div className="controls">
         {this.state.isPaused ? this.renderPaused() : this.renderPlaying()}
 
-        <button onClick={this.handleToggleSelectEntity} className={selectClass} title="Click an entity to inspect it.">
+        <button
+          onClick={this.handleToggleSelectEntity}
+          className={selectClass}
+          title="Click an entity to inspect it."
+        >
           <span className="glyphicon glyphicon-zoom-in" />
         </button>
       </div>
     );
-  }
+  },
 });
 
 module.exports = GameState;

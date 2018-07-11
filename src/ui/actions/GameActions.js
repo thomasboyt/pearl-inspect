@@ -39,5 +39,5 @@ module.exports = {
 
   didDisableSelectMode: function() {
     this.dispatch('disabledSelectMode');
-  }
+  },
 };
