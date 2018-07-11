@@ -1,6 +1,6 @@
 var React = require('react');
 var FluxMixin = require('fluxxor').FluxMixin(React);
-var EntityPropertiesList = require('./EntityPropertiesList');
+var ComponentsList = require('./ComponentsList');
 var ListArrow = require('./ListArrow');
 
 var Entity = React.createClass({
@@ -25,9 +25,7 @@ var Entity = React.createClass({
           </span>
         </span>
 
-        {isActive && (
-          <EntityPropertiesList entity={this.props.subscribedDetail} />
-        )}
+        {isActive && <ComponentsList entity={this.props.subscribedDetail} />}
       </li>
     );
   },

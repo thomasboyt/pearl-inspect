@@ -1,4 +1,5 @@
 import { GameObject } from 'pearl';
+import { SerializedEntityDetail } from '../types';
 
 const hiddenTypes = [HTMLElement, AudioContext, CanvasRenderingContext2D];
 
@@ -69,7 +70,10 @@ function cloneObject(
   return clone;
 }
 
-function serializeEntity(entity: GameObject, entities: GameObject[]) {
+function serializeEntity(
+  entity: GameObject,
+  entities: GameObject[]
+): SerializedEntityDetail {
   const entitiesMap = new WeakMap();
   // Chrome doesn't support WeakMap(iterable) yet :(
   entities.forEach((entity) => {
@@ -78,9 +82,17 @@ function serializeEntity(entity: GameObject, entities: GameObject[]) {
 
   const seenMap = new WeakMap();
 
-  const clone = cloneObject(entity, seenMap, entitiesMap);
+  const serializedComponents: { [key: string]: any } = {};
 
-  return clone;
+  for (let component of entity.components) {
+    const name = component.constructor.name;
+    serializedComponents[name] = cloneObject(component, seenMap, entitiesMap);
+  }
+
+  return {
+    id: entity.id,
+    components: serializedComponents,
+  };
 }
 
 export default serializeEntity;
