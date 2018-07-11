@@ -1,18 +1,12 @@
-# coquette-inspect [![Stories in Ready](https://badge.waffle.io/thomasboyt/coquette-inspect.png?label=ready&title=Ready)](https://waffle.io/thomasboyt/coquette-inspect)
+# pearl-inspect
 
-A Chrome DevTools extension for inspecting games made with the [Coquette](http://coquette.maryrosecook.com/) framework.
-
-![](https://cloud.githubusercontent.com/assets/579628/4639937/32eca436-5417-11e4-8f2b-422e33b11d9e.gif)
-
-<p align="center">
-  <em>The inspector in action in the <a href="http://coquette.maryrosecook.com/demos/spinning-shapes/">spinning shapes demo</a>.</em>
-</p>
+A Chrome DevTools extension for inspecting games made with the [Pearl](https://github.com/thomasboyt/pearl) framework.
 
 ## Features
 
 * List entities currently in the game world
-* Inspect the properties of entities as they update
-* Change the properties of entities
+* Inspect the properties of components as they update
+* Change the properties of components
 * Play/pause the game loop
 * Step through the game loop
 
@@ -21,26 +15,26 @@ A Chrome DevTools extension for inspecting games made with the [Coquette](http:/
 To install:
 
 ```
-git clone git@github.com:thomasboyt/coquette-inspect.git
-cd coquette-inspect/
-npm install && ./node_modules/.bin/webpack
+git clone git@github.com:thomasboyt/pearl-inspect.git
+cd pearl-inspect/
+npm install && npm run build
 ```
 
 Then load the `chrome-extension` folder as an unpacked extension ([see this guide](https://developer.chrome.com/extensions/getstarted#unpacked)).
 
-If it worked, you should see a "Coquette" tab in your developer tools when you next open them.
+If it worked, you should see a "Pearl" tab in your developer tools when you next open them.
 
 ## Usage
 
 There are two modifications you'll need to do to your Coquette apps to make them work.
 
-### Exposing Coquette
+### Exposing the Pearl instance
 
-The most important one is that you expose the Coquette instance in your game as `window.__coquette__`, e.g.:
+The most important one is that you expose the Pearl instance in your game as `window.__pearl__`, e.g.:
 
 ```js
 var Game = function() {
-  window.__coquette__ = this.c = new Coquette(this, "canvas", 500, 150, "#000");
+  window.__pearl__ = this.c = new Coquette(this, "canvas", 500, 150, "#000");
 // ...
 ```
 
@@ -48,8 +42,12 @@ Without this, the inspector won't be able to find your Coquette instance.
 
 ### Entity display names
 
-To display your entities with their proper names (i.e. their constructors), one of two of the following need to be true:
+When creating GameObjects, create them with a `name` property to ensure a name is displayed:
 
-If your constructors are defined with the syntax `function Foo() {...}`, the name will be looked up with `entity.constructor.name`. This doesn't work if your function is anonymous, e.g. `var Foo = function() {...}`, because that's just how `function.name` works. See [MDN] (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name) for more detail on this weird quirk.
-
-Otherwise, you can set the `displayName` property on your entity. You can either set it inside the constructor (e.g. `this.displayName = 'Person'`), or inside the call to `entities.create` (e.g. `c.entities.create(Person, {displayName: 'Player'})`).
+```typescript
+const playerObj = new GameObject({
+  name: 'player',
+  components: [new Player()],
+  /*...*/
+});
+```
