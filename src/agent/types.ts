@@ -3,7 +3,10 @@ export interface SerializedEntity {
   id: string;
 }
 
-export type SerializedComponent = Object;
+export interface SerializedComponent {
+  name: string;
+  properties: { [name: string]: any };
+}
 
 export interface SerializedEntityDetail {
   id: string;

@@ -1,10 +1,42 @@
-import { GameObject } from 'pearl';
-import { SerializedEntityDetail } from '../types';
+import { GameObject } from '../../../../pearl/dist';
+import { SerializedEntityDetail, SerializedComponent } from '../types';
 
 const hiddenTypes = [HTMLElement, AudioContext, CanvasRenderingContext2D];
 
 type BlacklistMap = WeakMap<any, null>;
 type SeenMap = WeakMap<any, boolean>;
+
+function getRecursiveProps(obj: Object): string[] {
+  const prototype = Object.getPrototypeOf(obj);
+
+  // stop here!
+  if (prototype === Object.prototype) {
+    return [];
+  }
+
+  const propNames = Object.getOwnPropertyNames(obj).filter((name) => {
+    const desc = Object.getOwnPropertyDescriptor(obj, name)!;
+
+    // TODO: return something to indicate it's not editable if desc.set is
+    // missing
+    // use same behavior if desc.writable is false I guess
+    if (desc.hasOwnProperty('get')) {
+      return true;
+    } else {
+      if (desc.hasOwnProperty('value')) {
+        return true;
+      }
+    }
+
+    return false;
+  });
+
+  if (!prototype) {
+    return propNames;
+  } else {
+    return propNames.concat(getRecursiveProps(prototype));
+  }
+}
 
 function cloneValue(val: any, seen: SeenMap, blacklist: BlacklistMap) {
   /* Functions */
@@ -25,7 +57,7 @@ function cloneValue(val: any, seen: SeenMap, blacklist: BlacklistMap) {
 
   /* Objects */
   if (typeof val === 'object' && val !== null) {
-    // don't serialize the Coquette object, which is often stored on entities
+    // don't serialize the Pearl object, which is often stored on entity
     if (val === (window as any).__pearl__) {
       return '[[Pearl namespace]]';
     }
@@ -63,7 +95,9 @@ function cloneObject(
 ) {
   const clone: { [key: string]: any } = {};
 
-  for (let key of Object.keys(obj)) {
+  const props = getRecursiveProps(obj);
+
+  for (let key of getRecursiveProps(obj)) {
     clone[key] = cloneValue(obj[key], seen, blacklist);
   }
 
@@ -82,11 +116,22 @@ function serializeEntity(
 
   const seenMap = new WeakMap();
 
-  const serializedComponents: { [key: string]: any } = {};
+  const serializedComponents: { [key: string]: SerializedComponent } = {};
 
   for (let component of entity.components) {
     const name = component.constructor.name;
-    serializedComponents[name] = cloneObject(component, seenMap, entitiesMap);
+
+    const properties = cloneObject(component, seenMap, entitiesMap);
+
+    // TODO: Figure out how to do of this better
+    // Maybe prevent getRecursiveProps from returning Component prototype props?
+    delete properties['gameObject'];
+    delete properties['initialSettings'];
+
+    serializedComponents[name] = {
+      name,
+      properties,
+    };
   }
 
   return {
@@ -96,3 +141,29 @@ function serializeEntity(
 }
 
 export default serializeEntity;
+
+// const serialized = {
+//   Physical: {
+//     name: 'Physical',
+//     properties: [{
+//       name: 'center',
+//       type: 'object',
+//       value: {
+//         x: 0,
+//         y: 0,
+//       },
+//     }, {
+//       name: 'angle',
+//       type: 'number',
+//       value: 0,
+//     }],
+//   },
+//   PolygonCollider: {
+//     name: 'PolygonCollider',
+//     properties: [{
+//       name: 'points',
+//       type: 'array',
+//       value: [[1, 0], [1, 1], [0, 1], [0, 0]],
+//     }]
+//   },
+// }

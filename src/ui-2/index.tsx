@@ -1,4 +1,4 @@
-require('../../style/main.less');
+require('../../style/main.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

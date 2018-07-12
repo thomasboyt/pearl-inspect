@@ -3,6 +3,8 @@ import { inject, observer } from 'mobx-react';
 import sendMessage from '../util/sendMessage';
 import EntitiesStore from '../stores/EntitiesStore';
 import { SerializedComponent } from '../../agent/types';
+import ComponentView from './ComponentView';
+import objectEntries from '../util/objectEntries';
 
 interface Props {
   entitiesStore?: EntitiesStore;
@@ -24,27 +26,12 @@ export default class EntityDetail extends React.Component<Props> {
       return <div />;
     }
 
-    const componentNames = Object.keys(entity.components);
+    const components = objectEntries(entity.components).map(
+      ([name, component]) => (
+        <ComponentView key={name} component={component} entityId={entity.id} />
+      )
+    );
 
-    const nameComponentEntries = componentNames.map((name) => {
-      // XXX: explicit annotation needed here because otherwise it thinks it's
-      // just Object[]. shouldn't be needed if SerializedComponent becomes a
-      // more specific interface
-      const pair: [string, SerializedComponent] = [
-        name,
-        entity.components[name],
-      ];
-      return pair;
-    });
-
-    const components = nameComponentEntries.map(([name, component]) => {
-      return (
-        <li key={name} onClick={() => this.handleSelectEntity(entity.id)}>
-          {name}
-        </li>
-      );
-    });
-
-    return <ul>{components}</ul>;
+    return <div className="component-list">{components}</div>;
   }
 }

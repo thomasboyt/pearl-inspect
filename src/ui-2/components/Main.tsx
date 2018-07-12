@@ -16,15 +16,17 @@ interface Props {
 class Main extends React.Component<Props, {}> {
   renderLoaded() {
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">
+      <div>
+        <div className="header">
+          <span className="header-text">Pearl Inspector</span>
           <GameControls />
-          <h3 className="panel-title">Entities</h3>
         </div>
 
-        <div className="panel-body">
-          <div style={{ display: 'flex' }}>
+        <div className="container">
+          <div className="entity-list">
             <EntitiesList />
+          </div>
+          <div className="entity-detail">
             <EntityDetail />
           </div>
         </div>
