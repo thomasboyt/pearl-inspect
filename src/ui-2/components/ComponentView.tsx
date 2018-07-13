@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SerializedComponent } from '../../agent/types';
-import PropertiesList from './properties/PropertiesList';
+import ComponentPropertiesList from './properties/ComponentPropertiesList';
 
 interface Props {
   entityId: string;
@@ -26,10 +26,9 @@ export default class ComponentView extends React.Component<Props> {
       <div className="component">
         <div className="component-name">{component.name}</div>
         <div className="component-properties">
-          <PropertiesList
+          <ComponentPropertiesList
             entityId={this.props.entityId}
-            componentName={component.name}
-            value={component.properties}
+            component={component}
           />
         </div>
       </div>

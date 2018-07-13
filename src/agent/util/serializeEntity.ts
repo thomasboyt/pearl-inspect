@@ -1,12 +1,11 @@
-import { GameObject } from '../../../../pearl/dist';
-import { SerializedEntityDetail, SerializedComponent } from '../types';
+import { GameObject, Component } from 'pearl';
+import {
+  SerializedEntityDetail,
+  SerializedComponent,
+  SerializedProperty,
+} from '../types';
 
-const hiddenTypes = [HTMLElement, AudioContext, CanvasRenderingContext2D];
-
-type BlacklistMap = WeakMap<any, null>;
-type SeenMap = WeakMap<any, boolean>;
-
-function getRecursiveProps(obj: Object): string[] {
+function getRecursivePropNames(obj: Object): string[] {
   const prototype = Object.getPrototypeOf(obj);
 
   // stop here!
@@ -24,6 +23,11 @@ function getRecursiveProps(obj: Object): string[] {
       return true;
     } else {
       if (desc.hasOwnProperty('value')) {
+        // remove functions
+        if (typeof desc.value === 'function') {
+          return false;
+        }
+
         return true;
       }
     }
@@ -34,74 +38,8 @@ function getRecursiveProps(obj: Object): string[] {
   if (!prototype) {
     return propNames;
   } else {
-    return propNames.concat(getRecursiveProps(prototype));
+    return propNames.concat(getRecursivePropNames(prototype));
   }
-}
-
-function cloneValue(val: any, seen: SeenMap, blacklist: BlacklistMap) {
-  /* Functions */
-  if (typeof val === 'function') {
-    return undefined; // TODO: there's a use case for serializing these into [object Function],
-    // maybe just do this filtering UI-side
-  }
-
-  /* Arrays */
-  if (Array.isArray(val)) {
-    if (seen.has(val)) {
-      return '[[Circular reference]]';
-    }
-
-    seen.set(val, true);
-    return cloneArray(val, seen, blacklist);
-  }
-
-  /* Objects */
-  if (typeof val === 'object' && val !== null) {
-    // don't serialize the Pearl object, which is often stored on entity
-    if (val === (window as any).__pearl__) {
-      return '[[Pearl namespace]]';
-    }
-    if (seen.has(val)) {
-      return '[[Circular reference]]';
-    }
-    if (blacklist.has(val)) {
-      return '[[Entity ' + val.name + ']]';
-    }
-
-    if (hiddenTypes.some((type) => val instanceof type)) {
-      return '[' + val.toString() + ']'; // looks like [[object HTMLElement]]
-    }
-
-    seen.set(val, true);
-    return cloneObject(val, seen, blacklist);
-  }
-
-  /* Primitives */
-  return val;
-}
-
-function cloneArray(arr: any[], seen: SeenMap, blacklist: BlacklistMap): any[] {
-  const clone = arr.map(function(val) {
-    return cloneValue(val, seen, blacklist);
-  });
-
-  return clone;
-}
-
-function cloneObject(
-  obj: { [key: string]: any },
-  seen: SeenMap,
-  blacklist: BlacklistMap
-) {
-  const clone: { [key: string]: any } = {};
-
-  const props = getRecursiveProps(obj);
-
-  for (let key of getRecursiveProps(obj)) {
-    clone[key] = cloneValue(obj[key], seen, blacklist);
-  }
-
-  return clone;
 }
 
 function serializeEntity(
@@ -121,12 +59,7 @@ function serializeEntity(
   for (let component of entity.components) {
     const name = component.constructor.name;
 
-    const properties = cloneObject(component, seenMap, entitiesMap);
-
-    // TODO: Figure out how to do of this better
-    // Maybe prevent getRecursiveProps from returning Component prototype props?
-    delete properties['gameObject'];
-    delete properties['initialSettings'];
+    const properties = serializeComponentProperties(component);
 
     serializedComponents[name] = {
       name,
@@ -142,28 +75,105 @@ function serializeEntity(
 
 export default serializeEntity;
 
-// const serialized = {
-//   Physical: {
-//     name: 'Physical',
-//     properties: [{
-//       name: 'center',
-//       type: 'object',
-//       value: {
-//         x: 0,
-//         y: 0,
-//       },
-//     }, {
-//       name: 'angle',
-//       type: 'number',
-//       value: 0,
-//     }],
-//   },
-//   PolygonCollider: {
-//     name: 'PolygonCollider',
-//     properties: [{
-//       name: 'points',
-//       type: 'array',
-//       value: [[1, 0], [1, 1], [0, 1], [0, 0]],
-//     }]
-//   },
-// }
+// this is split up for awkward type checking reasons
+const unserializedComponentPropNamesArray: (keyof Component<any>)[] = [
+  'gameObject',
+  'pearl',
+  'initialSettings',
+];
+
+const unserializedComponentPropNames: Set<string> = new Set(
+  unserializedComponentPropNamesArray
+);
+
+function serializeComponentProperties(component: Component<any>) {
+  const propNames = getRecursivePropNames(component).filter(
+    (name) => !unserializedComponentPropNames.has(name)
+  );
+
+  const clone: { [key: string]: SerializedProperty } = {};
+
+  for (let propName of propNames) {
+    clone[propName] = serializeProperty(component, propName);
+  }
+
+  return clone;
+}
+
+// TODO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+//
+// We can't use the imported Pearl GameObject because that is a _completely
+// separate object_, bundled by Webpack! I'm not sure what the hell the long
+// term plan is here, lord only knows how I'm gonna identify components. Might
+// be as stupid as attaching them to the __pearl__ namespace inside Pearl
+// instantiation??
+const gameObjectConstructor = (window as any)['__pearl__'].obj.constructor;
+
+function serializeProperty(
+  component: Component<any>,
+  propName: string
+): SerializedProperty {
+  const val = (component as any)[propName];
+
+  if (Array.isArray(val)) {
+    // TODO: more here maybe
+    return {
+      name: propName,
+      type: 'array',
+    };
+  }
+
+  /* Objects */
+  if (typeof val === 'object' && val !== null) {
+    // if (propName === 'worldObj') {
+    //   debugger;
+    // }
+    if (val instanceof gameObjectConstructor) {
+      return {
+        name: propName,
+        type: 'entity',
+        entityId: val.id,
+      };
+    }
+
+    if (isCoordinates(val)) {
+      return {
+        name: propName,
+        type: 'coordinates',
+        value: {
+          x: val.x,
+          y: val.y,
+        },
+      };
+    }
+
+    // TODO: lmfao
+    // yes, this parses out `[object Foo]` to `Foo`
+    const objectType = Object.prototype.toString.call(val).slice(8, -1);
+
+    return {
+      name: propName,
+      type: 'object',
+      objectType,
+    };
+  }
+
+  /* Primitives */
+  return {
+    name: propName,
+    type: 'primitive',
+    value: val,
+  };
+}
+
+/**
+ * TODO: lmfao this is brittle as hell
+ */
+function isCoordinates(obj: Object): boolean {
+  return (
+    obj.constructor === Object &&
+    Object.keys(obj).length === 2 &&
+    obj.hasOwnProperty('x') &&
+    obj.hasOwnProperty('y')
+  );
+}
