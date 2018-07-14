@@ -47,3 +47,13 @@ class Physical extends Component<PhysSettings> {
 It might even be worth making it something like `@inspectable('coordinates')`, just to remove any magic.
 
 It also may be worth it to just make vectors an actual class to avoid this going forward, tbh. Then `reflect-metadata` could be used to automatically store the type of the inspectable field. This would also be a good way to enforce things about what is and isn't inspectable - e.g., error out if some weird union type is used, or a generic `Object` type.
+
+Godot has an `[Export]` tag used to show things in the editor.
+
+One thing to keep in mind with the long-term design of this is that it would be nice to be able to _log_ a field at any time, or dump it in the console, without worrying about the serialization of it in the inspector.
+
+## Button Interaction
+
+Since Chrome now adds a button for every dang extension for some reason, it would be nice to copy React DevTools in highlighting the Pearl button if Pearl is present on a page. Here's how they do it: https://github.com/facebook/react-devtools/blob/master/shells/webextension/src/GlobalHook.js#L24
+
+Vue DevTools might also be good to look at: https://github.com/vuejs/vue-devtools
